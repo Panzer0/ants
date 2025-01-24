@@ -8,7 +8,7 @@ class ACO:
         self,
         distances: np.ndarray,
         n_ants: int = 20,
-        n_iterations: int = 10000,
+        n_iterations: int = 1000,
         decay: float = 0.1,
         alpha: float = 1.0,  # pheromone importance
         beta: float = 2.0,  # distance importance
