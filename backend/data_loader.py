@@ -13,7 +13,7 @@ class DataLoader:
         with gzip.open(file_path, "rt") as f:
             content = f.read()
 
-        self.parse_dimension(content)
+        self._parse_dimension(content)
 
         coord_section = content.split("NODE_COORD_SECTION")[1].strip()
         lines = coord_section.split("\n")
@@ -22,18 +22,18 @@ class DataLoader:
             line = line.strip()
             if line == "EOF":
                 break
-            self.parse_line(line)
+            self._parse_line(line)
 
         self._calculate_distance_matrix()
 
-    def parse_line(self, line):
+    def _parse_line(self, line):
         parts = line.split()
         if len(parts) == 3:
             city_id = int(parts[0])
             x, y = float(parts[1]), float(parts[2])
             self.coordinates[city_id] = (x, y)
 
-    def parse_dimension(self, content):
+    def _parse_dimension(self, content):
         dimension_match = re.search(r"DIMENSION\s*:\s*(\d+)", content)
         if dimension_match:
             self.dimension = int(dimension_match.group(1))
