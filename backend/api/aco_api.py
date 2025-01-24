@@ -37,7 +37,7 @@ def solve_tsp():
     visualizer = Visualizer(loader.get_coordinates())
     img = io.BytesIO()
     visualizer.plot_route(best_path)
-    plt.savefig(img, format='png')
+    plt.savefig(img, format="png")
     img.seek(0)
 
     response = {
