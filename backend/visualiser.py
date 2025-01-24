@@ -4,7 +4,7 @@ from backend.aco import ACO
 from backend.data_loader import DataLoader
 
 
-class TSPVisualizer:
+class Visualizer:
     def __init__(self, coordinates):
         self.coordinates = coordinates
 
@@ -40,5 +40,5 @@ if __name__ == "__main__":
     aco = ACO(handler.get_distance_matrix())
     best_path, best_distance = aco.solve()
 
-    visualizer = TSPVisualizer(handler.get_coordinates())
+    visualizer = Visualizer(handler.get_coordinates())
     visualizer.plot_route(best_path)

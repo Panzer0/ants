@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 from backend.aco import ACO
 from backend.data_loader import DataLoader
-from backend.visualiser import TSPVisualizer
+from backend.visualiser import Visualizer
 import io
 
 app = Flask(__name__)
@@ -34,7 +34,7 @@ def solve_tsp():
     )
     best_path, best_distance = aco.solve()
 
-    visualizer = TSPVisualizer(loader.get_coordinates())
+    visualizer = Visualizer(loader.get_coordinates())
     img = io.BytesIO()
     visualizer.plot_route(best_path)
     plt.savefig(img, format='png')
@@ -64,7 +64,7 @@ def visualize():
     loader = DataLoader()
     loader.read_tsp_file(tsp_file)
 
-    visualizer = TSPVisualizer(loader.get_coordinates())
+    visualizer = Visualizer(loader.get_coordinates())
     img = io.BytesIO()
     visualizer.plot_route(best_path)
     plt.savefig(img, format="png")
