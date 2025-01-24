@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_file
 from matplotlib import pyplot as plt
 
-from backend.ACO import ACO
+from backend.aco import ACO
 from backend.data_loader import DataLoader
 from backend.visualiser import TSPVisualizer
 import io

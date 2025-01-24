@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from backend.ACO import ACO
+from backend.aco import ACO
 from backend.data_loader import DataLoader
 
 
