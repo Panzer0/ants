@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from matplotlib import pyplot as plt
 
 from backend.aco import ACO
@@ -6,8 +6,11 @@ from backend.data_loader import DataLoader
 from backend.visualiser import Visualizer
 import io
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="frontend/build")
 
+@app.route("/")
+def serve_frontend():
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route("/solve", methods=["POST"])
 def solve_tsp():
