@@ -77,38 +77,52 @@
         });
     });
 
-    document.getElementById('submitButton').addEventListener('click', () => {
-    const data = {
-        n_ants: document.getElementById('antsInput').value,
-        n_iterations: document.getElementById('iterationsInput').value,
-        decay: document.getElementById('decayInput').value,
-        alpha: document.getElementById('alphaInput').value,
-        beta: document.getElementById('betaInput').value,
-        tsp_file: "att48.tsp.gz"
-    };
+document.getElementById('submitButton').addEventListener('click', () => {
+        const data = {
+            n_ants: document.getElementById('antsInput').value,
+            n_iterations: document.getElementById('iterationsInput').value,
+            decay: document.getElementById('decayInput').value,
+            alpha: document.getElementById('alphaInput').value,
+            beta: document.getElementById('betaInput').value,
+            tsp_file: "att48.tsp.gz"
+        };
 
-    fetch("/solve", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.image) {
-            const imgElement = document.getElementById("resultImage");
-            imgElement.src = "data:image/png;base64," + result.image;
-            imgElement.style.display = "block";
-        } else {
-            alert("Błąd: obraz nie został zwrócony przez backend.");
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("An error occurred. Try again.");
+        fetch("/solve", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === "success") {
+
+                fetch("/visualize", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        best_path: result.best_path,
+                        tsp_file: data.tsp_file
+                    }),
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const imgElement = document.getElementById("resultImage");
+                    imgElement.src = URL.createObjectURL(blob);
+                    imgElement.style.display = "block";
+                });
+            } else {
+                alert(result.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred. Try again.");
+        });
     });
-});
 </script>
 </body>
 </html>
