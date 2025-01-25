@@ -30,7 +30,7 @@ class TSPVisualizer:
         plt.xlabel("X Coordinate")
         plt.ylabel("Y Coordinate")
         plt.grid(True)
-        plt.show()
+        # plt.show() # Unnecessary
 
 
 if __name__ == "__main__":
