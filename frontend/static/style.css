@@ -1,0 +1,92 @@
+@import url('colors.css');
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 600px;
+    min-height: 600px;
+}
+
+.main-box {
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: var(--secondary-color);
+    margin: 0 auto;
+    padding: 2em;
+    margin-top: 5em;
+    width: 75%;
+}
+
+.main-box h1 {
+    font-size: xx-large;
+    font-style: italic;
+    transition: 5.5s;
+}
+
+.main-box h2 {
+    font-size: larger;
+    font-weight: 500;
+}
+
+.main-box button {
+    padding: 0.5em 1.5em;
+    margin-bottom: 1em;
+    font-size: 1.25em;
+    background-color: var(--button-color);
+    color: var(--secondary-text-color);
+    cursor: pointer;
+    font-style: italic;
+    font-weight: bold;
+    border-radius: 2em;
+    transition: 0.75s;
+}
+
+.main-box button:hover {
+    border-color: var(--secondary-text-color);
+    background-color: var(--button-hover-color);
+}
+
+.values-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: stretch;
+    margin-bottom: 1em;
+}
+
+.input-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 1em;
+}
+
+.input-group label {
+    flex: 0 0 auto;
+    min-width: 120px;
+    text-align: left;
+}
+
+.input-group input[type="number"] {
+    flex: 1 1 auto;
+    padding: 0.5em;
+    background: var(--button-color);
+    border: 1px solid var(--secondary-text-color);;
+    border-radius: 5px;
+    max-width: 3.5em;
+    text-align: right;
+}
+
+.input-group input[type="range"] {
+    flex: 1 1 auto;
+    height: 8px;
+    background: var(--button-color);
+    border-radius: 5px;
+}

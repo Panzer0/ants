@@ -1,3 +1,128 @@
-:root {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <title>Ants</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="main-box">
+    <h1>Ants</h1>
+    <h2>Enter values then click "Start" to see predicted route</h2>
 
-}
+    <div class="values-container">
+        <div class="input-group">
+            <label for="antsInput">Ants number:</label>
+            <input type="number" id="antsInput" value="20"/>
+            <input type="range" id="antsRangeInput" min="1" max="500" value="20"/>
+        </div>
+        <div class="input-group">
+            <label for="iterationsInput">Iterations:</label>
+            <input type="number" id="iterationsInput" value="100"/>
+            <input type="range" id="iterationsRangeInput" min="1" max="1000" value="100"/>
+        </div>
+        <div class="input-group">
+            <label for="decayInput">Decay value:</label>
+            <input type="number" id="decayInput" value="0.1" step="0.01"/>
+            <input type="range" id="decayRangeInput" min="0.1" max="0.5" step="0.01" value="0.1"/>
+        </div>
+        <div class="input-group">
+            <label for="alphaInput">Alpha value:</label>
+            <input type="number" id="alphaInput" value="1.0" step="0.1"/>
+            <input type="range" id="alphaRangeInput" min="0.5" max="5" step="0.1" value="1.0"/>
+        </div>
+        <div class="input-group">
+            <label for="betaInput">Beta value:</label>
+            <input type="number" id="betaInput" value="2.0" step="0.1"/>
+            <input type="range" id="betaRangeInput" min="1.0" max="5" step="0.1" value="2.0"/>
+        </div>
+    </div>
+
+    <button id="resetButton">Reset</button>
+    <button id="submitButton">Start</button>
+    <div id="result">
+        <img id="resultImage" src=""/>
+    </div>
+</div>
+
+<script>
+    const pairs = [
+        { number: 'antsInput', range: 'antsRangeInput', default: 20 },
+        { number: 'iterationsInput', range: 'iterationsRangeInput', default: 100 },
+        { number: 'decayInput', range: 'decayRangeInput', default: 0.1 },
+        { number: 'alphaInput', range: 'alphaRangeInput', default: 1.0 },
+        { number: 'betaInput', range: 'betaRangeInput', default: 2.0 }
+    ];
+
+    // Synchronize range and number inputs
+    pairs.forEach(pair => {
+        const numberInput = document.getElementById(pair.number);
+        const rangeInput = document.getElementById(pair.range);
+
+        rangeInput.addEventListener('input', () => {
+            numberInput.value = rangeInput.value;
+        });
+
+        numberInput.addEventListener('input', () => {
+            rangeInput.value = numberInput.value;
+        });
+    });
+
+    document.getElementById('resetButton').addEventListener('click', () => {
+        pairs.forEach(pair => {
+            document.getElementById(pair.number).value = pair.default;
+            document.getElementById(pair.range).value = pair.default;
+        });
+    });
+
+document.getElementById('submitButton').addEventListener('click', () => {
+        const data = {
+            n_ants: document.getElementById('antsInput').value,
+            n_iterations: document.getElementById('iterationsInput').value,
+            decay: document.getElementById('decayInput').value,
+            alpha: document.getElementById('alphaInput').value,
+            beta: document.getElementById('betaInput').value,
+            tsp_file: "att48.tsp.gz"
+        };
+
+        fetch("/solve", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === "success") {
+
+                fetch("/visualize", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        best_path: result.best_path,
+                        tsp_file: data.tsp_file
+                    }),
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const imgElement = document.getElementById("resultImage");
+                    imgElement.src = URL.createObjectURL(blob);
+                    imgElement.style.display = "block";
+                });
+            } else {
+                alert(result.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred. Try again.");
+        });
+    });
+</script>
+</body>
+</html>
