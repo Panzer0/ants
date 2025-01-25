@@ -8,9 +8,11 @@ import io
 
 app = Flask(__name__, static_folder="frontend/build")
 
+
 @app.route("/")
 def serve_frontend():
     return send_from_directory(app.static_folder, "index.html")
+
 
 @app.route("/solve", methods=["POST"])
 def solve_tsp():
