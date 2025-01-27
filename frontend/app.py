@@ -4,26 +4,25 @@ from backend.api.aco_api import solve_tsp, visualize
 # App instance
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
-# Default values
-default_values = {
-    "ants": 20,
-    "iterations": 100,
-    "decay": 0.1,
-    "alpha": 1.0,
-    "beta": 2.0
-}
 
 @app.route("/", methods=["GET"])
 def home():
-    return render_template("index.html", default_values=default_values)
+    return render_template("index.html")
 
 @app.route("/solve", methods=["POST"])
 def solve():
-    return solve_tsp()
+    try:
+        result = solve_tsp()
+        return result
+    except Exception as e:
+        print("Error in solve:", str(e))
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/visualize", methods=["POST"])
 def visualize_route():
-    return visualize()
+    if request.is_json:
+        return visualize()
+    return jsonify({"error": "Invalid request"}), 400
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, threaded=False)
