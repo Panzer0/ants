@@ -43,7 +43,7 @@
     <button id="resetButton">Reset</button>
     <button id="submitButton">Start</button>
     <div id="result">
-        <img id="resultImage" src=""/>
+        <img id="result-image" alt="Result visualization">
     </div>
 </div>
 
@@ -56,7 +56,6 @@
         { number: 'betaInput', range: 'betaRangeInput', default: 2.0 }
     ];
 
-    // Synchronize range and number inputs
     pairs.forEach(pair => {
         const numberInput = document.getElementById(pair.number);
         const rangeInput = document.getElementById(pair.range);
@@ -75,54 +74,76 @@
             document.getElementById(pair.number).value = pair.default;
             document.getElementById(pair.range).value = pair.default;
         });
+
+        const imgElement = document.getElementById("result-image");
+        imgElement.style.display = "none";
     });
 
-document.getElementById('submitButton').addEventListener('click', () => {
-        const data = {
-            n_ants: document.getElementById('antsInput').value,
-            n_iterations: document.getElementById('iterationsInput').value,
-            decay: document.getElementById('decayInput').value,
-            alpha: document.getElementById('alphaInput').value,
-            beta: document.getElementById('betaInput').value,
-            tsp_file: "att48.tsp.gz"
-        };
+    document.getElementById("submitButton").addEventListener("click", function () {
+    const submitButton = document.getElementById("submitButton");
+    submitButton.disabled = true;
+    submitButton.textContent = "Processing...";
 
-        fetch("/solve", {
+    const params = {
+        n_ants: parseInt(document.getElementById("antsInput").value, 10),
+        n_iterations: parseInt(document.getElementById("iterationsInput").value, 10),
+        decay: parseFloat(document.getElementById("decayInput").value),
+        alpha: parseFloat(document.getElementById("alphaInput").value),
+        beta: parseFloat(document.getElementById("betaInput").value),
+        tsp_file: "att48.tsp.gz"
+    };
+
+    fetch("/solve", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Something went wrong! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data.best_path) {
+            throw new Error("No best_path in response");
+        }
+
+        return fetch("/visualize", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "image/png"
             },
-            body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === "success") {
-
-                fetch("/visualize", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        best_path: result.best_path,
-                        tsp_file: data.tsp_file
-                    }),
-                })
-                .then(response => response.blob())
-                .then(blob => {
-                    const imgElement = document.getElementById("resultImage");
-                    imgElement.src = URL.createObjectURL(blob);
-                    imgElement.style.display = "block";
-                });
-            } else {
-                alert(result.message);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("An error occurred. Try again.");
+            body: JSON.stringify({
+                tsp_file: "att48.tsp.gz",
+                best_path: data.best_path
+            })
         });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        const imgElement = document.getElementById("result-image");
+        imgElement.src = URL.createObjectURL(blob);
+        imgElement.style.display = "block";
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Error occurred: " + error.message);
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = "Start";
     });
+});
 </script>
 </body>
 </html>
